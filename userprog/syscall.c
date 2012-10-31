@@ -43,12 +43,47 @@ syscall_init (void)
 }
  
 /* System call handler. */
-
 static void
-syscall_handler (struct intr_frame *f UNUSED)
+syscall_handler (struct intr_frame *f)
 {
-  printf ("system call!\n");
-  thread_exit ();
+	//Get the system call number from the sp
+	int *sys_call = f->esp;
+	//Check if we have a valid user address
+	mem_access( sys_call );
+	
+	switch( *sys_call )
+	{
+		case: SYS_HALT:
+		case: SYS_EXIT:
+		case: SYS_EXEC:
+			f->eax = sys_exec( (*sys_call+1) )//Have to dereference here because its a pointer to the argurment
+		case: SYS_WAIT:
+		case: SYS_CREATE:
+		case: SYS_REMOVE:
+		case: SYS_OPEN:
+		case: SYS_FILESIZE:
+		case: SYS_READ:
+		case: SYS_WRITE:
+		case: SYS_SEEK:
+		case: SYS_TELL:
+		case: SYS_CLOSE:
+	}
+}
+
+static bool
+mem_access(const void *addr)
+{
+	//Check if user address is valid
+	if( lookup_page( thread_current()->pagedir ) == NULL
+		|| !is_user_vaddr( addr )
+		|| addr == NULL
+		|| addr < PHYS_BASE - STACK_SIZE 
+	)
+	{
+		thread_current()->status = THREAD_DYING;
+		thread_exit();
+	}
+	return true;
 }
 
 /* Returns true if UADDR is a valid, mapped user address,
@@ -147,8 +182,15 @@ sys_exit (int exit_code)
 static int
 sys_exec (const char *ufile) 
 {
-/* Add code */
-  thread_exit ();
+	tid_t thread_id;
+	char* kernalFile = copy_in_string( ufile );	
+	
+	lock_acquire( &fs_lock );
+	thread_id = process_execute( kernalFile );
+	palloc_free_page( kernalFile );
+	lock_release( &fs_lock );
+	
+	return thread_id;
 }
  
 /* Wait system call. */

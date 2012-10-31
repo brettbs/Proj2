@@ -513,8 +513,19 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static void
 reverse (int argc, char **argv) 
 {
-   /* add code */
-
+   char *high = argv[argc - 1];
+   int     lowCount = 0;
+   int 	highCount = argc;
+   //This code just swaps the first and last elements until less than 2 left
+   while( argc > 1 )
+   {
+		argv[highCount - 1] = argv[lowCount];
+		argv[lowCount] = high;
+		argc -= 2;
+		lowCount++;
+		highCount--;
+		high = argv[highCount - 1]
+   }
    return;
 }
 
@@ -574,7 +585,7 @@ init_cmd_line (uint8_t *kpage, uint8_t *upage, const char *cmd_line,
 
   /* Reverse the order of the command line arguments. */
   argv = (char **) (upage + ofs);
-  reverse (argc, (char **) (kpage + ofs));
+  reverse (argc, (char **) (kpage + ofs)); 
 
   /* Push argv, argc, "return address". */
   if (push (kpage, &ofs, &argv, sizeof argv) == NULL
