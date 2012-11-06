@@ -31,6 +31,8 @@ static int sys_close (int handle);
  
 static void syscall_handler (struct intr_frame *);
 static void copy_in (void *, const void *, size_t);
+
+static bool mem_access(const void *addr);
  
 /* Serializes file system operations. */
 static struct lock fs_lock;
@@ -56,9 +58,9 @@ syscall_handler (struct intr_frame *f)
 		case: SYS_HALT:
 		case: SYS_EXIT:
 		case: SYS_EXEC:
-			f->eax = sys_exec( (*sys_call+1) )//Have to dereference here because its a pointer to the argurment
+			f->eax = sys_exec( (*sys_call+1) ); //Have to dereference here because its a pointer to the argurment
 		case: SYS_WAIT:
-			f->eax = sys_wait( (*sys_call+1) )//Have to dereference here because its a pointer to the argurment
+			f->eax = sys_wait( (*sys_call+1) ); //Have to dereference here because its a pointer to the argurment
 		case: SYS_CREATE:
 		case: SYS_REMOVE:
 		case: SYS_OPEN:
@@ -218,7 +220,7 @@ sys_remove (const char *ufile)
 /* A file descriptor, for binding a file handle to a file. */
 struct file_descriptor
   {
-    struct list_elem elem;      /* List element. */
+    struct list_elem elem;      /* List element.  */
     struct file *file;          /* File. */
     int handle;                 /* File handle. */
   };
