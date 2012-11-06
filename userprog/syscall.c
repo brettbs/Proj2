@@ -51,7 +51,7 @@ syscall_handler (struct intr_frame *f)
 	//Get the system call number from the sp
 	int *sys_call = f->esp;
 	//Check if we have a valid user address
-	mem_access( sys_call );
+	mem_access( sys_call, esp );
 	
 	switch( *sys_call )
 	{
@@ -110,12 +110,13 @@ syscall_handler (struct intr_frame *f)
 }
 
 static bool
-mem_access(const void *addr)
+mem_access(const void *addr, const void *sp)
 {
 	//Check if user address is valid
-	if( lookup_page( thread_current()->pagedir ) == NULL
+	if( !verify_user( addr )
 		|| !is_user_vaddr( addr )
 		|| addr == NULL
+		|| addr < sp
 	)
 	{
 		thread_current()->status = THREAD_DYING;
