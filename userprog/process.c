@@ -175,8 +175,8 @@ process_exit (void)
       struct wait_status *cs = cur->wait_status;
 
       /* add code */
-      printf ("%s: exit(0)\n", cur->name); // HACK all successful ;-)
-
+      printf ("%s: exit(%d)\n", cur->name, cs->exit_code); 
+	  sema_up(&cs->dead);
       release_child (cs);
     }
 
@@ -529,18 +529,18 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static void
 reverse (int argc, char **argv) 
 {
-   char *high = argv[argc - 1];
    int     lowCount = 0;
    int 	highCount = argc;
    //This code just swaps the first and last elements until less than 2 left
    while( argc > 1 )
    {
+        char *high = argv[highCount - 1];
 		argv[highCount - 1] = argv[lowCount];
 		argv[lowCount] = high;
+		
 		argc -= 2;
 		lowCount++;
 		highCount--;
-		high = argv[highCount - 1];
    }
    return;
 }
