@@ -146,7 +146,7 @@ process_wait (tid_t child_tid)
 		e = list_next(e) )
 	{
 		struct wait_status *process_status = list_entry( e, struct wait_status, elem );
-		if( process_status->child_tid == child_tid)
+		if( process_status->tid == child_tid)
 		{
 			int code;
 			list_remove(e);
@@ -540,7 +540,7 @@ reverse (int argc, char **argv)
 		argc -= 2;
 		lowCount++;
 		highCount--;
-		high = argv[highCount - 1]
+		high = argv[highCount - 1];
    }
    return;
 }
