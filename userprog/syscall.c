@@ -56,20 +56,43 @@ syscall_handler (struct intr_frame *f)
 	switch( *sys_call )
 	{
 		case: SYS_HALT:
+			f->eax = sys_halt( void );
+			
 		case: SYS_EXIT:
+			f->eax = sys_exit( (*sys_call+1) ); //Have to dereference here because its a pointer to the argurment
+			
 		case: SYS_EXEC:
-			f->eax = sys_exec( (*sys_call+1) ); //Have to dereference here because its a pointer to the argurment
+			f->eax = sys_exec( (*sys_call+1) );
+			
 		case: SYS_WAIT:
-			f->eax = sys_wait( (*sys_call+1) ); //Have to dereference here because its a pointer to the argurment
+			f->eax = sys_wait( (*sys_call+1) ); 
+			
 		case: SYS_CREATE:
+			f->eax = sys_create( (*sys_call+1),  (*sys_call+2) ); 
+			
 		case: SYS_REMOVE:
+			f->eax = sys_remove( (*sys_call+1) ); 
+			
 		case: SYS_OPEN:
+			f->eax = sys_open( (*sys_call+1) ); 
+			
 		case: SYS_FILESIZE:
+			f->eax = sys_filesize( (*sys_call+1) ); 
+			
 		case: SYS_READ:
+			f->eax = sys_read( (*sys_call+1), (*sys_call+2), (*sys_call+3) ); 
+			
 		case: SYS_WRITE:
+			f->eax = sys_write( (*sys_call+1), (*sys_call+2), (*sys_call+3) ); 
+			
 		case: SYS_SEEK:
+			f->eax = sys_seek( (*sys_call+1), (*sys_call+1)  ); 
+			
 		case: SYS_TELL:
+			f->eax = sys_tell( (*sys_call+1) ); 
+			
 		case: SYS_CLOSE:
+			f->eax = sys_close( (*sys_call+1) ); 
 	}
 }
 
