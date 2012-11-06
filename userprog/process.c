@@ -139,7 +139,23 @@ release_child (struct wait_status *cs)
 int
 process_wait (tid_t child_tid) 
 {
-  return -1;
+	struct thread *current = thread_current();
+	struct list_elem *e;
+	
+	for( e = list_begin( &current->children ); e != list_end( &current->children );
+		e = list_next(e) )
+	{
+		struct wait_status *process_status = list_entry( e, struct wait_status, elem );
+		if( process_status->child_tid == child_tid)
+		{
+			int code;
+			list_remove(e);
+			sema_down(&process_status->dead);
+			code = process_status->exit_code;
+			return code;
+		}
+	}
+	return -1;
 }
 
 /* Free the current process's resources. */

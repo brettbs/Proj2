@@ -58,6 +58,7 @@ syscall_handler (struct intr_frame *f)
 		case: SYS_EXEC:
 			f->eax = sys_exec( (*sys_call+1) )//Have to dereference here because its a pointer to the argurment
 		case: SYS_WAIT:
+			f->eax = sys_wait( (*sys_call+1) )//Have to dereference here because its a pointer to the argurment
 		case: SYS_CREATE:
 		case: SYS_REMOVE:
 		case: SYS_OPEN:
@@ -197,8 +198,7 @@ sys_exec (const char *ufile)
 static int
 sys_wait (tid_t child) 
 {
-/* Add code */
-  thread_exit ();
+	return process_wait( child );
 }
  
 /* Create system call. */
