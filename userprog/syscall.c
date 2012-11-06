@@ -220,7 +220,7 @@ sys_remove (const char *ufile)
 /* A file descriptor, for binding a file handle to a file. */
 struct file_descriptor
   {
-    struct list_elem elem;      /* List element. */
+    struct list_elem elem;      /* List element.  */
     struct file *file;          /* File. */
     int handle;                 /* File handle. */
   };
