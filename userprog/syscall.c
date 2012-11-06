@@ -109,6 +109,15 @@ syscall_handler (struct intr_frame *f)
 	}
 }
 
+/* Returns true if UADDR is a valid, mapped user address,
+   false otherwise. */
+static bool
+verify_user (const void *uaddr) 
+{
+  return (uaddr < PHYS_BASE
+          && pagedir_get_page (thread_current ()->pagedir, uaddr) != NULL);
+}
+
 static bool
 mem_access(const void *addr, const void *sp)
 {
@@ -123,15 +132,6 @@ mem_access(const void *addr, const void *sp)
 		thread_exit();
 	}
 	return true;
-}
-
-/* Returns true if UADDR is a valid, mapped user address,
-   false otherwise. */
-static bool
-verify_user (const void *uaddr) 
-{
-  return (uaddr < PHYS_BASE
-          && pagedir_get_page (thread_current ()->pagedir, uaddr) != NULL);
 }
  
 /* Copies a byte from user address USRC to kernel address DST.
