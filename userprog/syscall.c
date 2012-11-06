@@ -32,7 +32,7 @@ static int sys_close (int handle);
 static void syscall_handler (struct intr_frame *);
 static void copy_in (void *, const void *, size_t);
 
-static bool mem_access(const void *addr);
+static bool mem_access(const void *addr, const void *sp);
  
 /* Serializes file system operations. */
 static struct lock fs_lock;
@@ -51,7 +51,7 @@ syscall_handler (struct intr_frame *f)
 	//Get the system call number from the sp
 	int *sys_call = f->esp;
 	//Check if we have a valid user address
-	mem_access( sys_call, esp );
+	mem_access( sys_call, f->esp );
 	
 	switch( *sys_call )
 	{
