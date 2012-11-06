@@ -56,7 +56,7 @@ syscall_handler (struct intr_frame *f)
 	switch( *sys_call )
 	{
 		case SYS_HALT:
-			f->eax = sys_halt( void );
+			f->eax = sys_halt( );
 			break;
 			
 		case SYS_EXIT:
@@ -116,7 +116,6 @@ mem_access(const void *addr)
 	if( lookup_page( thread_current()->pagedir ) == NULL
 		|| !is_user_vaddr( addr )
 		|| addr == NULL
-		|| addr < PHYS_BASE - STACK_SIZE 
 	)
 	{
 		thread_current()->status = THREAD_DYING;
