@@ -308,7 +308,19 @@ static struct file_descriptor *
 lookup_fd (int handle)
 {
 /* Add code to lookup file descriptor in the current thread's fds */
-  thread_exit ();
+	struct thread *current = thread_current();
+	struct list_elem *e;
+	
+	for( e = list_begin( &current->fds ); e != list_end( &current->fds );
+		e = list_next(e) )
+	{
+		struct file_descriptor *fd = list_entry( e, struct file_descriptor, elem );
+		if( fd->handle == handle )
+		{
+			return fd;
+		}
+	}
+	thread_exit ();
 }
  
 /* Filesize system call. */
