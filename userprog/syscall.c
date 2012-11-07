@@ -243,14 +243,26 @@ sys_wait (tid_t child)
 static int
 sys_create (const char *ufile, unsigned initial_size) 
 {
-  return 0;
+  char *kfile = copy_in_string (ufile);
+  
+  lock_acquire (&fs_lock);
+  bool result = filesys_create (kfile, initial_size) ;
+  lock_release (&fs_lock);
+  
+  return result;
 }
  
 /* Remove system call. */
 static int
 sys_remove (const char *ufile) 
 {
-/* Add code */
+  char *kfile = copy_in_string (ufile);
+  
+  lock_acquire (&fs_lock);
+  bool result = filesys_remove (kfile) ;
+  lock_release (&fs_lock);
+  
+  return result;
 }
  
 /* A file descriptor, for binding a file handle to a file. */
