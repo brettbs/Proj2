@@ -327,8 +327,19 @@ lookup_fd (int handle)
 static int
 sys_filesize (int handle) 
 {
-/* Add code */
-  thread_exit ();
+	struct thread *current = thread_current();
+	struct list_elem *e;
+	
+	for( e = list_begin( &current->fds ); e != list_end( &current->fds );
+		e = list_next(e) )
+	{
+		struct file_descriptor *fd = list_entry( e, struct file_descriptor, elem );
+		if( fd->handle == handle )
+		{
+			return file_length( fd->file );
+		}
+	}
+  //thread_exit ();
 }
  
 /* Read system call. */
@@ -436,6 +447,15 @@ sys_close (int handle)
 void
 syscall_exit (void) 
 {
-/* Add code */
-  return;
+	struct thread *current = thread_current();
+	struct list_elem *e;
+	
+	for( e = list_begin( &current->fds ); e != list_end( &current->fds );
+		e = list_next(e) )
+	{
+		struct file_descriptor *fd = list_entry( e, struct file_descriptor, elem );
+		file_close( fd->file );
+		list_remove(e);
+	}  
+    return;
 }
