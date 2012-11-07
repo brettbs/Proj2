@@ -529,7 +529,7 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
 static void
 reverse (int argc, char **argv) 
 {
-   int     lowCount = 0;
+   int lowCount = 0;
    int 	highCount = argc;
    //This code just swaps the first and last elements until less than 2 left
    while( argc > 1 )
