@@ -410,16 +410,28 @@ sys_write (int handle, void *usrc_, unsigned size)
 static int
 sys_seek (int handle, unsigned position) 
 {
-/* Add code */
-  thread_exit ();
+	struct file_descriptor *fd = lookup_fd( handle );
+	
+	if( position != 0 )
+	{
+		lock_acquire( &fs_lock );
+		file_seek( fd->file, position );
+		lock_release( &fs_lock );
+	}
 }
  
 /* Tell system call. */
 static int
 sys_tell (int handle) 
 {
-/* Add code */
-  thread_exit ();
+	unsigned temp = 0;
+	struct file_descriptor *fd = lookup_fd( handle );
+	
+	lock_acquire( &fs_lock );
+	temp = file_tell( fd->file, position );
+	lock_release( &fs_lock );
+	
+	return temp;
 }
  
 /* Close system call. */
@@ -427,19 +439,14 @@ static int
 sys_close (int handle) 
 {
 /* Add code */
-	struct thread *current = thread_current();
-	struct list_elem *e;
+	struct file_descriptor *fd = lookup_fd( handle );
 	
-	for( e = list_begin( &current->fds ); e != list_end( &current->fds );
-		e = list_next(e) )
-	{
-		struct file_descriptor *fd = list_entry( e, struct file_descriptor, elem );
-		if( fd->handle == handle )
-		{
-			file_close( fd->file );
-			list_remove(e);
-		}
-	}
+	lock_acquire( &fs_lock );
+	file_close( fd->file );
+	list_remove( &fd->elem );
+	free( fd );
+	lock_release( &fs_lock );
+
 	//thread_exit ();
 }
  
@@ -454,8 +461,11 @@ syscall_exit (void)
 		e = list_next(e) )
 	{
 		struct file_descriptor *fd = list_entry( e, struct file_descriptor, elem );
+		
+		lock_acquire( &fs_lock );
 		file_close( fd->file );
 		list_remove(e);
+		lock_release( &fs_lock );
 	}  
     return;
 }
