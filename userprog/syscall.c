@@ -346,8 +346,36 @@ sys_filesize (int handle)
 static int
 sys_read (int handle, void *udst_, unsigned size) 
 {
-/* Add code */
-  thread_exit ();
+	int *memOffset = udst_;
+	int numRead = 0;
+	int numToRead = 0;
+	int totalRead = 0;
+	int *newPos;	
+	
+	struct file_descriptor *fd = lookup_fd( handle );
+	
+	lock_acquire( &fs_lock );
+	while( size > 0 )
+	{
+		/* Get the next position in a page to read from */
+		newPos = pg_ofs( memOffset );
+		numToRead = PGSIZE - newPos;
+		
+		/* Check if we can read everything in one pass*/
+		if( size < numToRead )
+			numToRead = size;
+		
+		/* Read the data*/
+		numRead = file_read( fd->file, memOffset, numToRead );
+		
+		/* Find bytes left to read*/
+		size -= numRead;
+		memOffset += numRead;
+		totalRead += numRead;
+	}
+	lock_release( &fs_lock );
+	
+	return totalRead;
 }
  
 /* Write system call. */
