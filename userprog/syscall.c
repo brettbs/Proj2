@@ -428,7 +428,7 @@ sys_tell (int handle)
 	struct file_descriptor *fd = lookup_fd( handle );
 	
 	lock_acquire( &fs_lock );
-	temp = file_tell( fd->file, position );
+	temp = file_tell( fd->file );
 	lock_release( &fs_lock );
 	
 	return temp;
